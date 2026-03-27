@@ -344,6 +344,9 @@ Commands and quick fixes for common Linux issues.
 Step-by-step guides for performing tasks in Linux.
 
 ```bash
+# Record the screen with audio
+	wf-recorder --no-damage --framerate 30 --muxer mp4 -a
+
 # How to kill, simulate ok and cancel
 	kill -USR1 `pgrep yad`
 

@@ -344,6 +344,26 @@ Commands and quick fixes for common Linux issues.
 Step-by-step guides for performing tasks in Linux.
 
 ```bash
+# Record the the system audio with different formats
+	find your monitor source
+	pactl list sources short
+
+	You will see something like:
+	alsa_output.pci-0000_00_1f.3.analog-stereo.monitor
+
+	Record system audio
+	ffmpeg -f pulse -i alsa_output.pci-0000_00_1f.3.analog-stereo.monitor output.wav
+
+	Lower CPU usage (compressed format)
+	Instead of WAV (raw), encode directly:
+	ffmpeg -f pulse -i alsa_output.pci-0000_00_1f.3.analog-stereo.monitor -c:a flac output.flac
+
+	or even lighter, this avoids huge files + reduces disk I/O:
+	ffmpeg -f pulse -i alsa_output.pci-0000_00_1f.3.analog-stereo.monitor -c:a libmp3lame -b:a 192k output.mp3.
+
+	Even more efficient (no resampling)
+	ffmpeg -f pulse -i alsa_output.pci-0000_00_1f.3.analog-stereo.monitor -acodec copy output.mka
+
 # Record the screen with audio
 	wf-recorder --no-damage --framerate 30 --muxer mp4 -a
 

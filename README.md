@@ -344,6 +344,159 @@ Commands and quick fixes for common Linux issues.
 Step-by-step guides for performing tasks in Linux.
 
 ```bash
+# Get your website online in a few simple steps
+	1) create your website locally
+
+	2) buy the desired domain name (e.g. aerolia-renovation.fr) at gandi.net 
+		the account should contain the customer details
+
+	3) buy a host server at hetzner.com
+		go to: https://console.hetzner.cloud/
+		click "Create Project", give it a name (e.g. aerolia)
+		Click “Add Server” (Cost-optimized)
+		location pick Germany (Nuremberg)
+		OS Debian
+		type CX11 (or higher)
+		networking (IPv4 + IPv6)
+		add SSH key
+			- ssh-keygen -t ed25519 -C "your_email@example.com"
+			- press Enter for default path and no passphrase
+			- cat ~/.ssh/id_ed25519.pub
+			You’ll see something like (copy this key):
+			ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI... your_email@example.com
+			In Hetzner Cloud Console:
+			- Scroll to “SSH Keys”
+			- Click “Add SSH Key”
+			Fill:
+			- Name: my-laptop (or anything)
+			- Public key: paste what you copied (ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI...)
+		volumes: no volumes needed
+		firewall:
+		Create a firewall with rules:
+			Allow SSH (22) → your IP (or anywhere if unsure)
+			Allow HTTP (80) → 0.0.0.0/0
+			Allow HTTPS (443) → 0.0.0.0/0
+		backups - no
+		Placement Groups - no
+		Label - optional (e,g, project=aerolia)
+		Cloud config - no
+		Name - (e,g, aerolia-server)
+
+		now log into the server:
+		ssh root@YOUR_SERVER_IP
+		get your server IP:
+			- https://console.hetzner.com/projects
+			- On the left panel of the dashboard click on Servers
+		after logging into the server:
+		apt update && apt upgrade -y
+		apt install nginx -y
+		systemctl enable nginx
+		systemctl start nginx
+		http://YOUR_SERVER_IP (test it in the browser it should show nginx page)
+		
+	4) Point your domain (VERY IMPORTANT):
+		- go to: https://admin.gandi.net/domain/
+		- click on your domain you just bought (e,g, aerolia-renovation.fr)
+		- go to 'DNS Records' tab
+		- in terminal check your domain:
+			- ping aerolia-renovation.fr
+			(notice the IP address it shows)
+			- in 'DNS Records' look for records of that IP showing in the ping command output
+			- remove that record
+			- also remove the record that contains www
+		- add the these new records:
+			Type: A
+			Name: @
+			Value: YOUR_SERVER_IP
+
+			Type: A
+			Name: www
+			Value: YOUR_SERVER_IP
+
+	5. Deploy your website files:
+		mkdir -p /var/www/aerolia
+
+		Upload your files (from your PC):
+		scp -r /path/to/your/site/* root@YOUR_SERVER_IP:/var/www/aerolia/
+
+	6. Configure Nginx for your domain:
+		Create config:
+		nano /etc/nginx/sites-available/aerolia
+
+		Paste:
+		server {
+			listen 80;
+			server_name aerolia-renovation.fr www.aerolia-renovation.fr;
+
+			root /var/www/aerolia;
+			index index.html;
+
+			location / {
+				try_files $uri $uri/ =404;
+			}
+		}
+
+		Enable it:
+		ln -s /etc/nginx/sites-available/aerolia /etc/nginx/sites-enabled/
+		rm /etc/nginx/sites-enabled/default
+
+		Test config:
+		nginx -t
+
+		Reload:
+		systemctl reload nginx
+
+
+	7. Enable HTTPS (Let’s Encrypt)
+		Install Certbot:
+		apt install certbot python3-certbot-nginx -y
+
+		Run:
+		certbot --nginx
+
+		Choose your domain
+		redirect HTTP → HTTPS
+
+	8. Basic security
+		apt install fail2ban -y
+		apt install ufw -y
+		ufw allow 22
+		ufw allow 80
+		ufw allow 443
+		ufw enable
+
+		Edit:
+		nano /etc/ssh/sshd_config
+
+		Set:
+		PermitRootLogin no
+		PasswordAuthentication no
+
+		Restart:
+		systemctl restart ssh
+
+	9) Indexing your website on google search:
+		1. Verify Ownership via Google Search Console
+		This is the most important step. Google won't index a site until it's sure you own it.
+
+		Go to Google Search Console.
+		Add your URL: https://aerolia-renovation.fr/.
+
+		Verify it: The easiest way is usually the "HTML Tag" method. Google will give you a line of code (a <meta> tag). You need to copy and paste that into the <head> section of your website’s code.
+
+		Once you have added the code to your site, click "Verify" in the Search Console.
+
+		2. Request a Manual Indexing
+		Once verified, you can tell Google exactly where to look:
+
+		In the Search Console, look for the "URL Inspection" search bar at the top.
+
+		Paste your homepage URL: https://aerolia-renovation.fr/.
+
+		It will tell you "URL is not on Google." Click the button that says "Request Indexing."
+
+		Note: This usually takes 24–72 hours to process.
+
 # Record the the system audio with different formats
 	find your monitor source
 	pactl list sources short

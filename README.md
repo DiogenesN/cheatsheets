@@ -344,6 +344,40 @@ Commands and quick fixes for common Linux issues.
 Step-by-step guides for performing tasks in Linux.
 
 ```bash
+# Script to auto adjust your speakers balance volume
+	#!/bin/bash
+	# this will check the current level
+	# of both left and right speakers
+	# and if they have different volume
+	# it will adjust both to the lower value
+	# of the two (e,g if lett is 30 and right is 50
+	# the it will make both speakers 30).
+
+	read left right < <(
+		pactl get-sink-volume @DEFAULT_SINK@ |
+		awk '
+			{
+				for (i = 1; i <= NF; i++) {
+					if ($i ~ /^[0-9]+%$/) {
+						gsub("%","",$i)
+						printf "%s ", $i
+					}
+				}
+			}'
+	)
+
+	if (( left < right )); then
+		min=$left
+	else
+		min=$right
+	fi
+
+	pactl set-sink-volume @DEFAULT_SINK@ "${min}%" "${min}%"
+
+	echo "Left: ${left}%"
+	echo "Right: ${right}%"
+	echo "Both set to ${min}%"
+
 # Get your website online in a few simple steps
 	1) create your website locally
 

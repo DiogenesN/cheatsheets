@@ -344,6 +344,23 @@ Commands and quick fixes for common Linux issues.
 Step-by-step guides for performing tasks in Linux.
 
 ```bash
+
+# Edit MP3 file metadata:
+	# install eyeD3
+	sudo apt install eyeD3
+
+	# change the version to v2.3
+	eyeD3 --to-v2.3 file.mp3
+
+	# add/change image
+	eyeD3 --add-image cover.jpg:FRONT_COVER file.mp3
+
+	# add/change artist name
+	eyeD3 -a "Diogenes" file.mp3
+
+	# add/change title
+	eyeD3 -t "Вечное лето" file.mp3
+
 # Script to auto adjust your speakers balance volume
 	#!/bin/bash
 	# this will check the current level

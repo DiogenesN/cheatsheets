@@ -1300,6 +1300,9 @@ Step-by-step guides for performing tasks in Linux.
 	2.5 means 2.5× slower (4 seconds × 2.5 ≈ 10 seconds).
 	-an removes audio (or you can stretch it too, but it sounds unnatural unless processed).
 
+# Change title metadata of MP4 with ffmpeg
+	ffmpeg -i input.mp4 -map 0 -c copy -metadata title="New Title" output.mp4
+
 # Find installed packages using dpkg
 	dpkg -l fire\* | grep ^.i
 	dpkg -l unatt\* | grep ^.i
